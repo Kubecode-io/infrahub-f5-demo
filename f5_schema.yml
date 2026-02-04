@@ -1,0 +1,148 @@
+---
+# yaml-language-server: $schema=https://schema.infrahub.app/infrahub/schema/latest.json
+version: "1.0"
+nodes:
+
+  - name: LTM
+    namespace: Loadbalancer
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    icon: clarity:network-switch-solid
+    label: F5 LTM Load Balancer
+    inherit_from:
+      - DcimGenericDevice
+    relationships:
+      - name: vip
+        peer: ServiceVIP
+        cardinality: many
+
+  - name: F5Node
+    namespace: Loadbalancer
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    icon: clarity:network-switch-solid
+    label: F5 Node (Backend Server)
+    menu_placement: "ServiceVIP"
+    # inherit_from:
+    #   - DcimGenericDevice
+    attributes:
+      - name: name
+        kind: Text
+      - name: ip_address
+        kind: IPHost
+        optional: true
+      - name: fqdn
+        kind: Text
+        optional: true
+    relationships:
+      - name: f5_pool_member
+        peer: LoadbalancerF5PoolMember
+        cardinality: many
+
+  - name: F5PoolMember
+    namespace: Loadbalancer
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    icon: clarity:network-switch-solid
+    label: F5 Pool Member (Node and Port)
+    menu_placement: "ServiceVIP"
+    # inherit_from:
+    #   - DcimGenericDevice
+    attributes:
+      - name: name
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "{{ f5_node__name__value}}:{{ service_port__value }}"
+        read_only: true
+        optional: false
+        unique: true
+      - name: service_port
+        kind: Number
+        optional: false
+    relationships:
+      - name: f5_pool
+        peer: ServiceF5Pool
+        cardinality: many
+      - name: f5_node
+        peer: LoadbalancerF5Node
+        cardinality: one
+
+  - name: VIP
+    namespace: Service
+    description: A load balancer that distributes network traffic via Virtual IPs (VIPs) to frontend servers.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: "VIP Service"
+    icon: carbon:floating-ip
+    include_in_menu: true
+    inherit_from:
+      - ServiceGeneric
+      - ServiceGenericDevice
+    attributes:
+      - name: name
+        kind: Text
+      - name: source_address
+        kind: IPNetwork
+      - name: destination_address
+        kind: IPNetwork
+      - name: service_port
+        kind: Number
+    relationships:
+      - name: f5_pool
+        peer: ServiceF5Pool
+        cardinality: one
+        optional: false
+      - name: ltm
+        peer: LoadbalancerLTM
+        cardinality: one
+        kind: Parent
+        optional: false
+
+  - name: F5Pool
+    namespace: Service
+    description: F5 backend server f5_pool
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: "F5 Server Pool"
+    icon: mdi:server
+    menu_placement: "ServiceVIP"
+    attributes:
+      - name: name
+        kind: Text
+    relationships:
+      - name: member
+        peer: LoadbalancerF5PoolMember
+        cardinality: many
+      - name: vip
+        peer: ServiceVIP
+        cardinality: many
+      - name: f5_health_monitor
+        peer: ServiceF5HealthMonitor
+        cardinality: many
+
+  - name: F5HealthMonitor
+    namespace: Service
+    description: F5 Health Monitor
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: "F5 Health Monitor"
+    icon: mdi:heart-pulse
+    menu_placement: "ServiceVIP"
+    attributes:
+      - name: name
+        kind: Dropdown
+        description: Health Monitor
+        choices:
+          - name: http
+            label: HTTP
+            description: HTTP monitor.
+            color: "#A9DFBF"  # light pastel green
+          - name: tcp
+            label: TCP
+            description: TCP monitor.
+            color: "#A9CCE3"  # pastel blue
+    relationships:
+      - name: f5_pool
+        peer: ServiceF5Pool
+        cardinality: many

@@ -1,0 +1,66 @@
+query {
+  ServiceVIP {
+    edges {
+      node {
+        name {
+          value
+        }
+        source_address {
+          value
+        }
+        destination_address {
+          value
+        }
+        service_port {
+          value
+        }
+        ltm {
+          node {
+            name {
+              value
+            }
+            primary_address {
+              node {
+                address {
+                  value
+                }
+              }
+            }
+          }
+        }
+        f5_pool {
+          node {
+            name {
+              value
+            }
+            member {
+              edges {
+                node {
+                  name {
+                    value
+                  }
+                  service_port {
+                    value
+                  }
+                  f5_node {
+                    node {
+                      name {
+                        value
+                      }
+                      ip_address {
+                        value
+                      }
+                      fqdn {
+                        value
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
