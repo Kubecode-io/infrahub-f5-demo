@@ -1,5 +1,6 @@
 import argparse
 from jinja2 import Environment, FileSystemLoader
+import json
 import os
 import requests
 import sys
@@ -31,28 +32,41 @@ if response.status_code == 200:
     all_variables['vips'] = []
     for vip in vips:
         vip_node = vip['node']
+        ltm_ipaddress = vip_node['ltm']['node']['primary_address']['node']['address']['value'].split('/')[0]
         vip_dict = {
             'name': vip_node['name']['value'],
             'service_port': vip_node['service_port']['value'],
             'source_address': vip_node['source_address']['value'],
             'f5_pool': vip_node['f5_pool']['node']['name']['value'],
+            'destination_address': vip_node['destination_address']['value'],
+            'ltm_name': vip_node['ltm']['node']['name']['value'],
+            'ltm_ipaddress': ltm_ipaddress,
             'members': []
         }
         members = vip_node['f5_pool']['node']['member']['edges']
         for member in members:
             member_node = member['node']
+            ip_address = member_node['f5_node']['node']['ip_address']['value'].split('/')[0]
             member_dict = {
                 'name': member_node['name']['value'],
                 'service_port': member_node['service_port']['value'],
-                'ip_address': member_node['f5_node']['node']['ip_address']['value'],
+                'ip_address': ip_address,
                 'fqdn': member_node['f5_node']['node']['fqdn']['value'],
                 'node_name': member_node['f5_node']['node']['name']['value']
             }
             vip_dict['members'].append(member_dict)
         all_variables['vips'].append(vip_dict)
 
+
+
     if args.verbose:
         print()
         print("Formatted data to render group_vars:")
         print("---------------------------------")
         pprint(all_variables)
+
+all_variables_json = json.dumps(all_variables)
+
+with open('ansible/f5_config_data.json', 'w') as fh:
+    fh.write(all_variables_json)
+

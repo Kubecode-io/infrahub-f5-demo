@@ -1,0 +1,1 @@
+{"vips": [{"name": "VIP-1", "service_port": 80, "source_address": "0.0.0.0/0", "f5_pool": "SWIM", "destination_address": "192.168.10.130/32", "members": [{"name": "BACKEND-1:80", "service_port": 80, "ip_address": "192.168.10.190/32", "fqdn": null, "node_name": "BACKEND-1"}]}]}

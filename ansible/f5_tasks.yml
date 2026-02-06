@@ -1,0 +1,45 @@
+- name: Create pool
+  bigip_pool:
+    state: present
+    name: "{{ f5vip.f5_pool }}"
+    partition: Common
+    monitors:
+      - http
+    provider:
+      server: "{{ f5vip.ltm_ipaddress }}"
+      user: "{{ f5_user }}"
+      password: "{{ f5_pass }}"
+      validate_certs: false
+  delegate_to: localhost
+
+- name: Add pool members
+  bigip_pool_member:
+    state: present
+    pool: "{{ f5vip.f5_pool }}"
+    partition: Common
+    host: "{{ item.ip_address }}"
+    name: "{{ item.node_name }}"
+    port: "{{ item.service_port }}"
+    provider:
+      server: "{{ f5vip.ltm_ipaddress }}"
+      user: "{{ f5_user }}"
+      password: "{{ f5_pass }}"
+      validate_certs: false
+  delegate_to: localhost
+  loop: "{{ f5vip.members }}"
+
+- name: Add virtual server
+  bigip_virtual_server:
+    state: present
+    partition: Common
+    name: "{{ f5vip.name }}"
+    destination: "{{ f5vip.destination_address }}"
+    port: "{{ f5vip.service_port }}"
+    pool: "{{ f5vip.f5_pool }}"
+    description: "Test VIP created by Automation"
+    provider:
+      server: "{{ f5vip.ltm_ipaddress }}"
+      user: "{{ f5_user }}"
+      password: "{{ f5_pass }}"
+      validate_certs: false
+  delegate_to: localhost

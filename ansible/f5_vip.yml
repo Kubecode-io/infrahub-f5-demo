@@ -1,0 +1,14 @@
+- name: F5 LTM configuration deployment
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - f5_ltm_creds.yml
+    - f5_config_data.json
+
+  tasks:
+    - name: Loop over a set of tasks
+      ansible.builtin.include_tasks: f5_tasks.yml
+      loop: "{{ vips }}"
+      loop_control:
+        loop_var: f5vip
