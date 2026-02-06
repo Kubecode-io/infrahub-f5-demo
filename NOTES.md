@@ -14,14 +14,11 @@ pip install -r requirements.txt
 ## Load schema and data, build Ansible vars, build AVD configs and deploy
 ```
 infrahubctl schema load base_schema/ --branch main
-infrahubctl schema check fabric_schema.yml --branch main
-infrahubctl schema load fabric_schema.yml --branch main
-
-infrahubctl object load infrahub-lab-data --branch main
+infrahubctl schema load schema/f5_schema.yml --branch main
 
 python build_ansible_vars.py --branch main
 
-ansible-playbook -i inventory.yml playbooks/build.yml
+cd ansible
+ansible-playbook -i hosts f5_vip.yml
 
-ansible-playbook -i inventory.yml playbooks/avd-studio-deploy.yml
 ```
