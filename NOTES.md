@@ -13,8 +13,9 @@ pip install -r requirements.txt
 ```
 ## Load schema and data, build Ansible vars, build AVD configs and deploy
 ```
-infrahubctl schema load base_schema/ --branch main
-infrahubctl schema load schema/f5_schema.yml --branch main
+infrahubctl schema load schema/base_schema/ --branch main
+infrahubctl schema check schema/f5_schema/ --branch F5_DEMO
+infrahubctl schema load schema/f5_schema/ --branch F5_DEMO
 
 python build_ansible_vars.py --branch main
 
