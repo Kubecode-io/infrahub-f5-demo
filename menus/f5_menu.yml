@@ -19,16 +19,10 @@ spec:
             icon: carbon:load-balancer-classic
 
           - namespace: Loadbalancing
-            name: F5Node
-            label: F5 Nodes
-            kind: F5networksNode
-            icon: mdi:server-plus
-
-          - namespace: Loadbalancing
-            name: F5PoolMember
-            label: F5 Pool Member
-            kind: F5networksPoolMember
-            icon: mdi:server-plus
+            name: F5VIP
+            label: F5 VIPs
+            kind: F5networksVIP
+            icon: carbon:floating-ip
 
           - namespace: Loadbalancing
             name: F5Pool
@@ -37,7 +31,19 @@ spec:
             icon: carbon:load-balancer-pool
 
           - namespace: Loadbalancing
+            name: F5PoolMember
+            label: F5 Pool Member
+            kind: F5networksPoolMember
+            icon: mdi:server-plus
+
+          - namespace: Loadbalancing
+            name: F5Node
+            label: F5 Nodes
+            kind: F5networksNode
+            icon: clarity:rack-server-solid
+
+          - namespace: Loadbalancing
             name: F5Monitor
             label: F5 Monitor
             kind: F5networksMonitor
-            icon: tabler:checkup-list
+            icon: mdi:heart-pulse

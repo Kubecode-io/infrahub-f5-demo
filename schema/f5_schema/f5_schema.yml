@@ -87,7 +87,7 @@ nodes:
     description: A member of an F5 server pool, representing a backend server (node) and its associated service port.
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
-    icon: carbon:bare-metal-server
+    icon: mdi:server-plus
     label: F5 Pool Member (Node and Port)
     include_in_menu: false
     attributes:
