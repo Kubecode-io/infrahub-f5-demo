@@ -1,8 +1,61 @@
 ---
 # yaml-language-server: $schema=https://schema.infrahub.app/infrahub/schema/latest.json
 version: "1.0"
-nodes:
+generics:
+  - name: Monitor
+    namespace: F5networks
+    attributes:
+      - name: name
+        kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
+      - name: destination
+        kind: Text
+        description: The destination IP address and port for this monitor to check.
+        default_value: "*:*"
+      - name: interval
+        kind: Number
+        description: The time interval (in seconds) between health checks performed by the monitor.
+        default_value: 10
+      - name: time_until_up
+        kind: Number
+        description: The amount of time, in seconds, after the first successful response before a node is marked up.
+        default_value: 0
+      - name: timeout
+        kind: Number
+        description: The number of seconds the target has in which to respond to the monitor request.
+        default_value: 31
+    relationships:
+      - name: pool
+        peer: F5networksPool
+        cardinality: many
+      # - name: app_service
+      #   peer: F5networksAppService
+      #   cardinality: one
 
+  - name: IPMonitor
+    namespace: F5networks
+    attributes:
+      - name: ip_dscp
+        kind: Number
+        description: Specifies the differentiated services code point (DSCP).
+        default_value: 0
+      - name: recv
+        kind: Text
+        description: The text string that the monitor looks for in the returned resource.
+      - name: send
+        kind: Text
+        description: The text string that the monitor sends to the target object.
+
+nodes:
   - name: LTM
     namespace: Loadbalancer
     human_friendly_id: ["name__value"]
@@ -34,15 +87,25 @@ nodes:
 
   - name: VIP
     namespace: F5networks
-    description: A load balancer that distributes network traffic via Virtual IPs (VIPs) to frontend servers.
+    description: A virtual server.
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
-    label: "F5 VIP"
+    label: ltm virtual
     icon: carbon:floating-ip
     include_in_menu: false
     attributes:
       - name: name
         kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
       - name: source_address
         kind: IPNetwork
       - name: destination_address
@@ -59,18 +122,106 @@ nodes:
         cardinality: one
         kind: Parent
         optional: false
+      - name: virtual_address
+        peer: F5networksVirtualAddress
+        cardinality: one
+      - name: rule
+        peer: F5networksRule
+        cardinality: many
+        optional: true
+      - name: snat_pool
+        peer: F5networksSNATPool
+        cardinality: one
+        optional: true
+
+  - name: VirtualAddress
+    namespace: F5networks
+    description: Destination IP of one or more virtual servers.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: ltm virtual-address
+    icon: mdi:ip
+    include_in_menu: false
+    attributes:
+      - name: name
+        kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
+      - name: address
+        kind: IPHost
+        description: The virtual IP address.
+      - name: mask
+        kind: Text
+        description: Sets the netmask for one or more network virtual servers only.
+        default_value: 255.255.255.255
+      - name: arp
+        kind: Boolean
+        description: Enable/Disble ARP
+        default_value: true
+      - name: icmp_echo
+        kind: Dropdown
+        # MDI harmony color palette: https://materialdesignicons.com/color/harmony
+        choices:
+          - name: enabled
+            label: Enabled
+            description: ICMP echo reply will be sent to ICMP echo requests.
+            color: "#388E3C"  # green
+          - name: always
+            label: Always
+            description: ICMP echo reply will be sent to ICMP echo requests.
+            color: "#388E3C"  # green
+          - name: disabled
+            label: Disabled
+            description: ICMP echo reply will not be sent to ICMP echo requests.
+            color: "#D32F2F"  # red
+          - name: selective
+            label: Selective
+            description: ICMP echo reply will sent be to ICMP echo requests, when availability status is true.
+            color: "#FFA000"  # amber
+          - name: any
+            label: Any
+            description: ICMP echo reply will be sent to ICMP echo requests, when any of the contributing virtual server is available.
+            color: "#1976D2"  # blue
+          - name: all
+            label: All
+            description: ICMP echo reply will be sent to ICMP echo requests, when all of the contributing virtual server is available.
+            color: "#1976D2"  # blue
+    relationships:
+      - name: vip
+        peer: F5networksVIP
+        cardinality: one
+        kind: Parent
+        optional: false
 
   - name: Pool
     namespace: F5networks
     description: A server pool consisting of backend servers (nodes) that receive traffic from VIPs.
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
-    label: "F5 Server Pool"
+    label: ltm pool
     icon: carbon:load-balancer-pool
     include_in_menu: false
     attributes:
       - name: name
         kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
     relationships:
       - name: member
         peer: F5networksPoolMember
@@ -81,6 +232,10 @@ nodes:
       - name: monitor
         peer: F5networksMonitor
         cardinality: many
+      - name: rule
+        peer: F5networksRule
+        cardinality: many
+        optional: true
 
   - name: PoolMember
     namespace: F5networks
@@ -88,7 +243,7 @@ nodes:
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
     icon: mdi:server-plus
-    label: F5 Pool Member (Node and Port)
+    label: ltm pool { members {}}
     include_in_menu: false
     attributes:
       - name: name
@@ -116,44 +271,218 @@ nodes:
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
     icon: clarity:rack-server-solid
-    label: F5 Node (Backend Server)
+    label: ltm node
     include_in_menu: false
     attributes:
       - name: name
         kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
       - name: ip_address
         kind: IPHost
+        description: The IP address of the node.
         optional: true
       - name: fqdn
         kind: Text
-        optional: true
+        description: The attributes for defining a fully qualified domain name for the node.
+      - name: state
+        kind: Dropdown
+        description: Specifies the current state of the node.
+        choices:
+          - name: user-up
+            label: user-up
+            color: "#388E3C"  # green
+            description: Node may handle connections.
+          - name: user-down
+            label: user-up
+            color: "#D32F2F"  # red
+            description: Node may *NOT* handle new connections.
+        default_value: user-up
     relationships:
       - name: pool_member
         peer: F5networksPoolMember
         cardinality: many
 
-  - name: Monitor
+  - name: LDAPMonitor
     namespace: F5networks
-    description: A health monitor checks the availability and performance of backend servers (nodes) in a server pool.
+    description: This type of monitor verifies the LDAP service by attempting to authenticate the specified user.
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
-    label: F5 Monitor
+    label: ltm monitor ldap
     icon: mdi:heart-pulse
+    include_in_menu: false
+    inherit_from: [ F5networksMonitor]
+    attributes:
+      - name: base
+        kind: Text
+        description: Specifies the location in the LDAP tree from which the monitor starts the health check.
+      - name: chase_referrals
+        kind: Boolean
+        description: Enable/Disable chasing referrals in LDAP monitoring.
+        default_value: true
+      - name: debug
+        kind: Boolean
+        description: Enable/Disable debug mode for LDAP monitoring.
+        default_value: false
+      - name: filter
+        kind: Text
+        description: The LDAP search filter used to identify the user for authentication.
+      - name: mandatory_attributes
+        kind: Boolean
+        description: Specifies whether the target must include attributes in its response to be considered up.
+        default_value: false
+      - name: password
+        kind: Password
+        description: The password if the monitored target requires authentication.
+      - name: username
+        kind: Text
+        description: The username, if the monitored target requires authentication.
+
+  - name: HTTPMonitor
+    namespace: F5networks
+    description: This type of monitor verifies the HTTP service by attempting to receive specific content from a Web page.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: ltm monitor http
+    icon: mdi:heart-pulse
+    include_in_menu: false
+    inherit_from: [ F5networksMonitor, F5networksIPMonitor]
+
+  - name: HTTPSMonitor
+    namespace: F5networks
+    description: This type of monitor verifies the HTTPS service by attempting to receive specific content from a Web page.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: ltm monitor https
+    icon: mdi:heart-pulse
+    include_in_menu: false
+    inherit_from: [ F5networksMonitor, F5networksIPMonitor]
+    # relationships:
+      # - name: ssl_profile
+      #   peer: F5networksSSLProfile
+      #   cardinality: one
+
+  - name: TCPMonitor
+    namespace: F5networks
+    description: This type of monitor verifies the TCP service by performing a TCP handshake.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: ltm monitor tcp
+    icon: mdi:heart-pulse
+    include_in_menu: false
+    inherit_from: [ F5networksMonitor, F5networksIPMonitor]
+
+  - name: ICMPMonitor
+    namespace: F5networks
+    description: This type of monitor verifies the node by sending an ICMP Echo.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: ltm monitor icmp
+    icon: mdi:heart-pulse
+    include_in_menu: false
+    inherit_from: [ F5networksMonitor, F5networksIPMonitor]
+
+  - name: ExternalMonitor
+    namespace: F5networks
+    description: This type of monitor verifies the node by running a script.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: ltm monitor icmp
+    icon: mdi:heart-pulse
+    include_in_menu: false
+    inherit_from: [ F5networksMonitor, F5networksIPMonitor]
+    # relationships:
+    #   - name: ext-monitor-file
+    #     peer: F5networksExtMonitorFile
+    #     cardinality: one
+
+  - name: Rule
+    namespace: F5networks
+    description: Tcl script that defines custom logic for processing traffic on a VIP.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 Rule
+    icon: mdi:script-text
     include_in_menu: false
     attributes:
       - name: name
-        kind: Dropdown
-        description: Monitor
-        choices:
-          - name: http
-            label: HTTP
-            description: HTTP monitor.
-            color: "#A9DFBF"  # light pastel green
-          - name: tcp
-            label: TCP
-            description: TCP monitor.
-            color: "#A9CCE3"  # pastel blue
+        kind: Text
+      - name: script
+        kind: Text
+        description: The content of the rule, written in Tcl.
     relationships:
-      - name: pool
-        peer: F5networksPool
+      - name: vip
+        peer: F5networksVIP
         cardinality: many
+        optional: true
+
+  - name: SNATPool
+    namespace: F5networks
+    description: A pool of translation addresses used for source NAT (SNAT).
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 SNAT Pool
+    icon: ic:baseline-nat
+    include_in_menu: false
+    attributes:
+      - name: name
+        kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
+      - name: address
+        kind: IPHost
+        description: The virtual IP address.
+    relationships:
+      - name: vip
+        peer: F5networksVIP
+        cardinality: many
+        optional: true
+      - name: snat_translation_address
+        peer: F5networksSNATTranslationAddress
+        cardinality: one
+        optional: false
+
+  - name: SNATTranslationAddress
+    namespace: F5networks
+    description: Explicitly defines the properties of a SNAT translation address.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 SNAT Translation Address
+    icon: ic:baseline-nat
+    include_in_menu: false
+    attributes:
+      - name: name
+        kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
+      - name: address
+        kind: IPHost
+        description: The translation IP address.
+    relationships:
+      - name: snat_pool
+        peer: F5networksSNATPool
+        cardinality: one

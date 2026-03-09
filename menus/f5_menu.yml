@@ -43,7 +43,44 @@ spec:
             icon: clarity:rack-server-solid
 
           - namespace: Loadbalancing
-            name: F5Monitor
-            label: F5 Monitor
-            kind: F5networksMonitor
+            name: F5Monitors
+            label: F5 Monitors
             icon: mdi:heart-pulse
+            children:
+              data:
+
+              - namespace: Loadbalancing
+                name: F5LDAPMonitor
+                label: F5 LDAP Monitor
+                kind: F5networksLDAPMonitor
+                icon: mdi:heart-pulse
+
+              - namespace: Loadbalancing
+                name: F5HTTPMonitor
+                label: F5 HTTP Monitor
+                kind: F5networksHTTPMonitor
+                icon: mdi:heart-pulse
+
+              - namespace: Loadbalancing
+                name: F5HTTPSMonitor
+                label: F5 HTTPS Monitor
+                kind: F5networksHTTPSMonitor
+                icon: mdi:heart-pulse
+
+              - namespace: Loadbalancing
+                name: F5TCPMonitor
+                label: F5 TCP Monitor
+                kind: F5networksTCPMonitor
+                icon: mdi:heart-pulse
+
+              - namespace: Loadbalancing
+                name: F5ICMPMonitor
+                label: F5 ICMP Monitor
+                kind: F5networksICMPMonitor
+                icon: mdi:heart-pulse
+
+              - namespace: Loadbalancing
+                name: F5ExternalMonitor
+                label: F5 External Monitor
+                kind: F5networksExternalMonitor
+                icon: mdi:heart-pulse
