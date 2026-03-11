@@ -4,6 +4,7 @@ version: "1.0"
 generics:
   - name: Monitor
     namespace: F5networks
+    include_in_menu: false
     attributes:
       - name: name
         kind: Text
@@ -33,16 +34,17 @@ generics:
         kind: Number
         description: The number of seconds the target has in which to respond to the monitor request.
         default_value: 31
+      - name: app_service
+        kind: Text
+        description: This feature is depricated. You can supply app-service name for compatibility.
     relationships:
       - name: pool
         peer: F5networksPool
         cardinality: many
-      # - name: app_service
-      #   peer: F5networksAppService
-      #   cardinality: one
 
   - name: IPMonitor
     namespace: F5networks
+    include_in_menu: false
     attributes:
       - name: ip_dscp
         kind: Number
@@ -112,6 +114,9 @@ nodes:
         kind: IPNetwork
       - name: service_port
         kind: Number
+      - name: app_service
+        kind: Text
+        description: This feature is depricated. You can supply app-service name for compatibility.
     relationships:
       - name: pool
         peer: F5networksPool
@@ -168,7 +173,7 @@ nodes:
         default_value: true
       - name: icmp_echo
         kind: Dropdown
-        # MDI harmony color palette: https://materialdesignicons.com/color/harmony
+        # MDI color palette: https://htmlcolorcodes.com/color-chart/material-design-color-chart/
         choices:
           - name: enabled
             label: Enabled
@@ -222,6 +227,9 @@ nodes:
         read_only: true
         optional: false
         unique: true
+      - name: app_service
+        kind: Text
+        description: This feature is depricated. You can supply app-service name for compatibility.
     relationships:
       - name: member
         peer: F5networksPoolMember
@@ -297,12 +305,12 @@ nodes:
         kind: Dropdown
         description: Specifies the current state of the node.
         choices:
-          - name: user-up
-            label: user-up
+          - name: user_up
+            label: user up
             color: "#388E3C"  # green
             description: Node may handle connections.
-          - name: user-down
-            label: user-up
+          - name: user_down
+            label: user down
             color: "#D32F2F"  # red
             description: Node may *NOT* handle new connections.
         default_value: user-up
@@ -399,10 +407,10 @@ nodes:
     icon: mdi:heart-pulse
     include_in_menu: false
     inherit_from: [ F5networksMonitor, F5networksIPMonitor]
-    # relationships:
-    #   - name: ext-monitor-file
-    #     peer: F5networksExtMonitorFile
-    #     cardinality: one
+    attributes:
+      - name: run
+        kind: Text
+        description: The external monitor file to be executed by the external monitor.
 
   - name: Rule
     namespace: F5networks
@@ -423,6 +431,9 @@ nodes:
         peer: F5networksVIP
         cardinality: many
         optional: true
+      - name: pool
+        peer: F5networksPool
+        cardinality: many
 
   - name: SNATPool
     namespace: F5networks
@@ -464,7 +475,7 @@ nodes:
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
     label: F5 SNAT Translation Address
-    icon: ic:baseline-nat
+    icon: iconoir:ip-address-tag
     include_in_menu: false
     attributes:
       - name: name
@@ -486,3 +497,93 @@ nodes:
       - name: snat_pool
         peer: F5networksSNATPool
         cardinality: one
+
+  - name: HTTPProfile
+    namespace: F5networks
+    description: The HTTP profile allows the virtual server to operate in full Layer 7 (L7) inspection mode.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 HTTP Profile
+    icon: material-symbols:lab-profile
+    include_in_menu: false
+    attributes:
+      - name: name
+        kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
+      - name: insert_xforwarded_for
+        kind: Boolean
+        description: Enables or disables insertion of an X-Forwarded-For header.
+        default_value: false
+      - name: rfc_compliance
+        kind: Boolean
+        description: Enable to enforce rfc compliance.
+      - name: unknown_method_allow
+        kind: Boolean
+        description: Enable to allow all methods.
+      - name: known_methods
+        kind: List
+        description: The HTTP methods known by the HTTP filter.
+        default_value: [CONNECT, DELETE, GET, HEAD, LOCK, OPTIONS, POST, PROPFIND, PUT, TRACE, UNLOCK]
+      - name: max_header_count
+        kind: Number
+        description: The maximum number of headers in HTTP request or response that will be handled.
+        default_value: 64
+      - name: max_header_size
+        kind: Number
+        description: The maximum header size.
+        default_value: 32768
+      - name: max_requests
+        kind: Number
+        description: The number of requests accepted per-connection. Zero means unlimited.
+        default_value: 0
+      - name: pipeline
+        kind: Boolean
+        description: Enables or disables HTTP/1.1 pipelining.
+        default_value: true
+      - name: truncated_redirects
+        kind: Boolean
+        description: Enable to pass-through a redirect lacking the trailing carriage-return and line.
+        default_value: false
+      - name: hsts_preload
+        kind: Boolean
+        description: Specifies if the preload directive is sent in the HSTS header.
+        default_value: false
+      - name: via_request
+        kind: Dropdown
+        choices:
+          - name: append
+            label: append
+            color: "#1976D2"  # blue
+            description: "The value from via-host-name is appended to the Via: HTTP header."
+          - name: preserve
+            label: preserve
+            color: "#388E3C"  # green
+            description: "Via: HTTP header is preserved without changes."
+          - name: remove
+            label: remove
+            color: "#FFA000"  # amber
+            description: "Via: HTTP header is removed from the request."
+        default_value: remove
+      - name: proxy_type
+        kind: Dropdown
+        choices:
+          - name: reverse
+            label: reverse
+            color: "#1976D2"  # blue
+            description: Manages traffic to backend web servers, acting as a standard reverse proxy.
+        default_value: reverse
+      - name: header_insert
+        kind: Text
+        description: Specifies a quoted header string that you want to insert into an HTTP request.
+    relationships:
+      - name: defaults_from
+        peer: F5networksHTTPProfile
