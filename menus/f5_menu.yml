@@ -41,17 +41,17 @@ spec:
             kind: F5networksNode
             icon: clarity:rack-server-solid
 
-          # - namespace: Loadbalancing
-          #   name: F5TrafficProfiles
-          #   label: F5 Traffic Profiles
-          #   icon: material-symbols:lab-profile
-          #   chlidren:
-          #     data:
-              # - namespace: Loadbalancing
-              #   name: F5HTTPProfile
-              #   label: F5 HTTP Profile
-              #   kind: F5networksHTTPProfile
-              #   icon: material-symbols:lab-profile
+          - namespace: Loadbalancing
+            name: F5Doodads
+            label: F5 Profiles
+            icon: material-symbols:lab-profile
+            children:
+              data:
+              - namespace: Loadbalancing
+                name: F5HTTPProfile
+                label: F5 HTTP Profile
+                kind: F5networksHTTPProfile
+                icon: material-symbols:lab-profile
 
           - namespace: Loadbalancing
             name: F5Monitors
@@ -94,9 +94,3 @@ spec:
                 label: F5 External Monitor
                 kind: F5networksExternalMonitor
                 icon: mdi:heart-pulse
-
-              - namespace: Loadbalancing
-                name: F5HTTPProfile
-                label: F5 HTTP Profile
-                kind: F5networksHTTPProfile
-                icon: material-symbols:lab-profile
