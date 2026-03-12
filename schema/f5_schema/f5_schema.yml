@@ -313,7 +313,7 @@ nodes:
             label: user down
             color: "#D32F2F"  # red
             description: Node may *NOT* handle new connections.
-        default_value: user-up
+        default_value: user_up
     relationships:
       - name: pool_member
         peer: F5networksPoolMember
@@ -584,6 +584,67 @@ nodes:
       - name: header_insert
         kind: Text
         description: Specifies a quoted header string that you want to insert into an HTTP request.
+    relationships:
+      - name: defaults_from
+        peer: F5networksHTTPProfile
+
+  - name: TCPProfile
+    namespace: F5networks
+    description: Use the TCP profile to manage TCP network traffic.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 TCP Profile
+    icon: material-symbols:lab-profile
+    include_in_menu: false
+    attributes:
+      - name: name
+        kind: Text
+      - name: partition
+        kind: Text
+      - name: fqname
+        kind: Text
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
+      - name: idle_timeout
+        kind: Number
+        description: Number of seconds that a connection is idle before the connection is eligible for deletion.
+        default_value: 300
+      - name: init_cwnd
+        kind: Number
+        description: Initial congestion window size.
+        default_value: 10
+      - name: init_rwnd
+        kind: Number
+        description: Initial receive window size.
+        default_value: 10
+      - name: keep_alive_interval
+        kind: Number
+        description: keep-alive probe interval, in seconds.
+        default_value: 1800
+      - name: minimum_rto
+        kind: Number
+        description: The minimum TCP retransmission timeout in milliseconds.
+        default_value: 1000
+      - name: proxy_buffer_high
+        kind: Number
+        description: The highest level at which the receive window is closed.
+        default_value: 131072
+      - name: proxy_buffer_low
+        kind: Number
+        description: The lowest level at which the receive window is closed.
+        default_value: 98304
+      - name: proxy_mss
+        kind: Boolean
+        description: When enabled, the system advertises the same TCP maximum segment size to the server as was negotiated with the client.
+        default_value: false
+      - name: proxy_options
+        kind: Boolean
+        description: When enabled, the system advertises an option only if it was negotiated with the client.
+        default_value: false
     relationships:
       - name: defaults_from
         peer: F5networksHTTPProfile
