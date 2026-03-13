@@ -2,16 +2,39 @@
 # yaml-language-server: $schema=https://schema.infrahub.app/infrahub/schema/latest.json
 version: "1.0"
 generics:
+  - name: BaseObject
+    namespace: F5networks
+    include_in_menu: false
+    attributes:
+      - name: name
+        kind: Text
+        order_weight: 100
+      - name: partition
+        kind: Text
+        order_weight: 200
+      - name: fqname
+        kind: Text
+        order_weight: 300
+        computed_attribute:
+          kind: Jinja2
+          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
+        read_only: true
+        optional: false
+        unique: true
+
   - name: Monitor
     namespace: F5networks
     include_in_menu: false
     attributes:
       - name: name
         kind: Text
+        order_weight: 100
       - name: partition
         kind: Text
+        order_weight: 200
       - name: fqname
         kind: Text
+        order_weight: 300
         computed_attribute:
           kind: Jinja2
           jinja2_template: "/{{ partition__value}}/{{ name__value }}"
@@ -95,25 +118,16 @@ nodes:
     label: ltm virtual
     icon: carbon:floating-ip
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
+      - name: destination_partition
         kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
-      - name: source_address
-        kind: IPNetwork
       - name: destination_address
-        kind: IPNetwork
+        kind: IPHost
       - name: service_port
         kind: Number
+      - name: source_address
+        kind: IPNetwork
       - name: app_service
         kind: Text
         description: This feature is depricated. You can supply app-service name for compatibility.
@@ -147,19 +161,8 @@ nodes:
     label: ltm virtual-address
     icon: mdi:ip
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
       - name: address
         kind: IPHost
         description: The virtual IP address.
@@ -214,19 +217,8 @@ nodes:
     label: ltm pool
     icon: carbon:load-balancer-pool
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
       - name: app_service
         kind: Text
         description: This feature is depricated. You can supply app-service name for compatibility.
@@ -281,19 +273,8 @@ nodes:
     icon: clarity:rack-server-solid
     label: ltm node
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
       - name: ip_address
         kind: IPHost
         description: The IP address of the node.
@@ -373,10 +354,10 @@ nodes:
     icon: mdi:heart-pulse
     include_in_menu: false
     inherit_from: [ F5networksMonitor, F5networksIPMonitor]
-    # relationships:
-      # - name: ssl_profile
-      #   peer: F5networksSSLProfile
-      #   cardinality: one
+    relationships:
+      - name: ssl_profile
+        peer: F5networksServerSSLProfile
+        cardinality: one
 
   - name: TCPMonitor
     namespace: F5networks
@@ -420,9 +401,8 @@ nodes:
     label: F5 Rule
     icon: mdi:script-text
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
       - name: script
         kind: Text
         description: The content of the rule, written in Tcl.
@@ -443,19 +423,8 @@ nodes:
     label: F5 SNAT Pool
     icon: ic:baseline-nat
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
       - name: address
         kind: IPHost
         description: The virtual IP address.
@@ -477,19 +446,8 @@ nodes:
     label: F5 SNAT Translation Address
     icon: iconoir:ip-address-tag
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
       - name: address
         kind: IPHost
         description: The translation IP address.
@@ -506,19 +464,8 @@ nodes:
     label: F5 HTTP Profile
     icon: material-symbols:lab-profile
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
       - name: insert_xforwarded_for
         kind: Boolean
         description: Enables or disables insertion of an X-Forwarded-For header.
@@ -596,19 +543,8 @@ nodes:
     label: F5 TCP Profile
     icon: material-symbols:lab-profile
     include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
     attributes:
-      - name: name
-        kind: Text
-      - name: partition
-        kind: Text
-      - name: fqname
-        kind: Text
-        computed_attribute:
-          kind: Jinja2
-          jinja2_template: "/{{ partition__value}}/{{ name__value }}"
-        read_only: true
-        optional: false
-        unique: true
       - name: idle_timeout
         kind: Number
         description: Number of seconds that a connection is idle before the connection is eligible for deletion.
@@ -648,3 +584,123 @@ nodes:
     relationships:
       - name: defaults_from
         peer: F5networksHTTPProfile
+
+  - name: SSLCertificate
+    namespace: F5networks
+    description: Specifies the name of the certificate installed on the traffic management system for SSL connections.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: sys file ssl-cert
+    icon: fluent:certificate-16-filled
+    include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
+
+  - name: SSLCertificateChain
+    namespace: F5networks
+    description: Specifies a certificate chain file that a client can use to authenticate the profile.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: sys file ssl-cert (chain)
+    icon: fluent:certificate-16-filled
+    include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
+
+  - name: SSLKey
+    namespace: F5networks
+    description: Specifies the name of a key file that you generated and installed on the system.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: sys file ssl-key
+    icon: fluent:certificate-16-filled
+    include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
+
+  - name: CertKeyChain
+    namespace: F5networks
+    description: A set of certificate, key, passphrase, chain
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: sys file ssl-key
+    icon: fluent:certificate-16-filled
+    include_in_menu: false
+    attributes:
+      - name: name
+        kind: Text
+    relationships:
+      - name: cert
+        peer: F5networksSSLCertificate
+        cardinality: one
+      - name: chain
+        peer: F5networksSSLCertificateChain
+        cardinality: one
+      - name: key
+        peer: F5networksSSLKey
+        cardinality: one
+
+  - name: ClientSSLProfile
+    namespace: F5networks
+    description: Enables the BIG-IP system to accept and terminate client requests that are sent using a fully SSL-encapsulated protocol.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 ClientSSL Profile
+    icon: material-symbols:lab-profile
+    include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
+    attributes:
+      - name: passphrase
+        kind: Password
+        description: The key passphrase, if required.
+      - name: server_name
+        kind: Text
+        description: Specifies the server names to be matched with SNI extension.
+      - name: sni_default
+        kind: Boolean
+        description: When true, this profile is the default SSL profile.
+    relationships:
+      - name: cert
+        peer: F5networksCertKeyChain
+        cardinality: one
+
+  - name: ServerSSLProfile
+    namespace: F5networks
+    description: Enables the BIG-IP system to initiate secure connections to your SSL servers by using a fully SSL-encapsulated protocol.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 ServerSSL Profile
+    icon: material-symbols:lab-profile
+    include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
+    attributes:
+      - name: passphrase
+        kind: Password
+        description: The key passphrase, if required.
+      - name: server_name
+        kind: Text
+        description: Specifies the server names to be matched with SNI extension.
+      - name: sni_default
+        kind: Boolean
+        description: When true, this profile is the default SSL profile.
+    relationships:
+      - name: cert
+        peer: F5networksSSLCertificate
+        cardinality: one
+      - name: chain
+        peer: F5networksSSLCertificateChain
+        cardinality: one
+      - name: key
+        peer: F5networksSSLKey
+        cardinality: one
+
+  - name: OneConnectProfile
+    namespace: F5networks
+    description: The OneConnect feature minimises the number of server-side TCP connections.
+    human_friendly_id: ["name__value"]
+    display_label: "{{ name__value }}"
+    label: F5 OneConnect Profile
+    icon: material-symbols:lab-profile
+    include_in_menu: false
+    inherit_from: [ F5networksBaseObject]
+    attributes:
+      - name: source_mask
+        kind: Text
+        description: A mask of 0.0.0.0 causes the system to share reused connections across all clients.

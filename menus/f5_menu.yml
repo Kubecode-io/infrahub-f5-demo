@@ -42,7 +42,7 @@ spec:
             icon: clarity:rack-server-solid
 
           - namespace: Loadbalancing
-            name: F5Doodads
+            name: F5Profiles
             label: F5 Profiles
             icon: material-symbols:lab-profile
             children:
@@ -51,6 +51,30 @@ spec:
                 name: F5HTTPProfile
                 label: F5 HTTP Profile
                 kind: F5networksHTTPProfile
+                icon: material-symbols:lab-profile
+
+              - namespace: Loadbalancing
+                name: F5TCPProfile
+                label: F5 TCP Profile
+                kind: F5networksTCPProfile
+                icon: material-symbols:lab-profile
+
+              - namespace: Loadbalancing
+                name: F5ClientSSLProfile
+                label: F5 ClientSSL Profile
+                kind: F5networksClientSSLProfile
+                icon: material-symbols:lab-profile
+
+              - namespace: Loadbalancing
+                name: F5ServerSSLProfile
+                label: F5 ServerSSL Profile
+                kind: F5networksServerSSLProfile
+                icon: material-symbols:lab-profile
+
+              - namespace: Loadbalancing
+                name: F5OneConnectProfile
+                label: F5 OneConnect Profile
+                kind: F5networksOneConnectProfile
                 icon: material-symbols:lab-profile
 
           - namespace: Loadbalancing
