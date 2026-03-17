@@ -6,4 +6,4 @@ Manage F5 VIPs, pools, members, profiles and monitors using infrahub as the sour
 
 ## F5 Data Model
 
-![](images/F5_Data_Model.png.png)
+![](images/F5_Data_Model.png)
