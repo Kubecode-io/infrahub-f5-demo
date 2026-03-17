@@ -1,4 +1,4 @@
-# infrahub-avd-demo
+# infrahub-f5-demo
 Infrahub and F5 schema, data and playbooks.
 
 ## What does this repo do?
