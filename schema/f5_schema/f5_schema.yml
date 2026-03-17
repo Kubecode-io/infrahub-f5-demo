@@ -60,6 +60,7 @@ generics:
       - name: app_service
         kind: Text
         description: This feature is depricated. You can supply app-service name for compatibility.
+        optional: true
     relationships:
       - name: pool
         peer: F5networksPool
@@ -131,6 +132,7 @@ nodes:
       - name: app_service
         kind: Text
         description: This feature is depricated. You can supply app-service name for compatibility.
+        optional: true
     relationships:
       - name: pool
         peer: F5networksPool
@@ -222,6 +224,7 @@ nodes:
       - name: app_service
         kind: Text
         description: This feature is depricated. You can supply app-service name for compatibility.
+        optional: true
     relationships:
       - name: member
         peer: F5networksPoolMember
@@ -257,6 +260,19 @@ nodes:
       - name: service_port
         kind: Number
         optional: false
+      - name: state
+        kind: Dropdown
+        description: Specifies the current state of the pool member.
+        choices:
+          - name: user_up
+            label: user-up
+            color: "#388E3C"  # green
+            description: Pool member may handle connections.
+          - name: user_down
+            label: user-down
+            color: "#D32F2F"  # red
+            description: Pool member may *NOT* handle new connections.
+        default_value: user_up
     relationships:
       - name: pool
         peer: F5networksPool
@@ -279,19 +295,41 @@ nodes:
         kind: IPHost
         description: The IP address of the node.
         optional: true
-      - name: fqdn
+      - name: fqdn_address_family
+        kind: Dropdown
+        description: Specifies whether the fqdn should consider IPv4, IPv6, or IP-agnostic address family.
+        choices:
+          - name: all
+            label: all
+            color: "#388E3C"  # green
+            description: IP-agnostic address family.
+          - name: ipv4
+            label: IPv4
+            color: "#AFB42B"  # lime
+            description: IPv4 address family.
+          - name: ipv6
+            label: IPv6
+            color: "#F57C00"  # orange
+            description: IPv6 address family.
+        default_value: all
+        optional: true
+      - name: fqdn_autopopulate
+        kind: Boolean
+        optional: true
+      - name: fqdn_name
         kind: Text
-        description: The attributes for defining a fully qualified domain name for the node.
+        description: Specifies the fully-qualified domain name of the node.
+        optional: true
       - name: state
         kind: Dropdown
         description: Specifies the current state of the node.
         choices:
           - name: user_up
-            label: user up
+            label: user-up
             color: "#388E3C"  # green
             description: Node may handle connections.
           - name: user_down
-            label: user down
+            label: user-down
             color: "#D32F2F"  # red
             description: Node may *NOT* handle new connections.
         default_value: user_up
