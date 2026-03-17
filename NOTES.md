@@ -16,6 +16,7 @@ pip install -r requirements.txt
 infrahubctl schema load schema/base_schema/ --branch main
 infrahubctl schema check schema/f5_schema/ --branch F5_DEMO
 infrahubctl schema load schema/f5_schema/ --branch F5_DEMO
+infrahubctl object load data/ --branch F5_DEMO
 
 python build_ansible_vars.py --branch main
 
