@@ -18,6 +18,12 @@ spec:
             icon: carbon:load-balancer-classic
 
           - namespace: Loadbalancing
+            name: LTMHAGroup
+            label: F5 LTM HA Group
+            kind: LoadbalancerLTMHAGroup
+            icon: grommet-icons:cluster
+
+          - namespace: Loadbalancing
             name: F5VIP
             label: F5 VIPs
             kind: F5networksVIP

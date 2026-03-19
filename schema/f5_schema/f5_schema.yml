@@ -9,6 +9,7 @@ generics:
       - name: name
         kind: Text
         order_weight: 100
+        unique: true
       - name: partition
         kind: Text
         order_weight: 200
@@ -20,7 +21,6 @@ generics:
           jinja2_template: "/{{ partition__value}}/{{ name__value }}"
         read_only: true
         optional: false
-        unique: true
 
   - name: Monitor
     namespace: F5networks
@@ -94,7 +94,7 @@ nodes:
     relationships:
       - name: hagroup
         peer: LoadbalancerLTMHAGroup
-        cardinality: many
+        cardinality: one
 
   - name: LTMHAGroup
     namespace: Loadbalancer
@@ -109,6 +109,9 @@ nodes:
     relationships:
       - name: vip
         peer: F5networksVIP
+        cardinality: many
+      - name: ltm
+        peer: LoadbalancerLTM
         cardinality: many
 
   - name: VIP
@@ -125,7 +128,7 @@ nodes:
         kind: Text
       - name: destination_address
         kind: IPHost
-      - name: service_port
+      - name: destination_service_port
         kind: Number
       - name: source_address
         kind: IPNetwork
@@ -231,7 +234,7 @@ nodes:
         cardinality: many
       - name: vip
         peer: F5networksVIP
-        cardinality: many
+        cardinality: one
       - name: monitor
         peer: F5networksMonitor
         cardinality: many
@@ -507,13 +510,15 @@ nodes:
       - name: insert_xforwarded_for
         kind: Boolean
         description: Enables or disables insertion of an X-Forwarded-For header.
-        default_value: false
+        optional: true
       - name: rfc_compliance
         kind: Boolean
-        description: Enable to enforce rfc compliance.
+        description: Enable to enforce RFC compliance.
+        optional: true
       - name: unknown_method_allow
         kind: Boolean
         description: Enable to allow all methods.
+        optional: true
       - name: known_methods
         kind: List
         description: The HTTP methods known by the HTTP filter.
@@ -557,7 +562,7 @@ nodes:
             label: remove
             color: "#FFA000"  # amber
             description: "Via: HTTP header is removed from the request."
-        default_value: remove
+        optional: true
       - name: proxy_type
         kind: Dropdown
         choices:
@@ -569,6 +574,7 @@ nodes:
       - name: header_insert
         kind: Text
         description: Specifies a quoted header string that you want to insert into an HTTP request.
+        optional: true
     relationships:
       - name: defaults_from
         peer: F5networksHTTPProfile
