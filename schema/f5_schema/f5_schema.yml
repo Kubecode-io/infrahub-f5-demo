@@ -445,7 +445,7 @@ nodes:
     inherit_from: [ F5networksBaseObject]
     attributes:
       - name: script
-        kind: Text
+        kind: TextArea
         description: The content of the rule, written in Tcl.
     relationships:
       - name: vip
