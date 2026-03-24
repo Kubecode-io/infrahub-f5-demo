@@ -238,10 +238,6 @@ nodes:
       - name: monitors
         peer: F5networksMonitor
         cardinality: many
-      - name: rules
-        peer: F5networksRule
-        cardinality: many
-        optional: true
 
   - name: PoolMember
     namespace: F5networks
