@@ -242,6 +242,8 @@ nodes:
   - name: PoolMember
     namespace: F5networks
     description: A member of an F5 server pool, representing a backend server (node) and its associated service port.
+    uniqueness_constraints:
+      - ["name__value", "pool"]
     human_friendly_id: ["name__value"]
     display_label: "{{ name__value }}"
     icon: mdi:server-plus
@@ -252,10 +254,9 @@ nodes:
         kind: Text
         computed_attribute:
           kind: Jinja2
-          jinja2_template: "{{ node__name__value}}:{{ service_port__value }}"
+          jinja2_template: "{{ node__name__value }}:{{ service_port__value }}"
         read_only: true
         optional: false
-        unique: true
       - name: service_port
         kind: Number
         optional: false
@@ -275,7 +276,8 @@ nodes:
     relationships:
       - name: pool
         peer: F5networksPool
-        cardinality: many
+        cardinality: one
+        optional: false
       - name: node
         peer: F5networksNode
         cardinality: one

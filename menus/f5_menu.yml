@@ -13,13 +13,13 @@ spec:
         data:
           - namespace: Loadbalancing
             name: LTM
-            label: F5 Local Traffic Manager
+            label: F5 Local Traffic Managers
             kind: LoadbalancerLTM
             icon: carbon:load-balancer-classic
 
           - namespace: Loadbalancing
             name: LTMHAGroup
-            label: F5 LTM HA Group
+            label: F5 LTM HA Groups
             kind: LoadbalancerLTMHAGroup
             icon: grommet-icons:cluster
 
@@ -31,13 +31,13 @@ spec:
 
           - namespace: Loadbalancing
             name: F5Pool
-            label: F5 Pool
+            label: F5 Pools
             kind: F5networksPool
             icon: carbon:load-balancer-pool
 
           - namespace: Loadbalancing
             name: F5PoolMember
-            label: F5 Pool Member
+            label: F5 Pool Members
             kind: F5networksPoolMember
             icon: mdi:server-plus
 
@@ -48,6 +48,12 @@ spec:
             icon: clarity:rack-server-solid
 
           - namespace: Loadbalancing
+            name: F5Rule
+            label: F5 Rules
+            kind: F5networksRule
+            icon: mdi:script-text
+
+          - namespace: Loadbalancing
             name: F5Profiles
             label: F5 Profiles
             icon: material-symbols:lab-profile
@@ -55,31 +61,31 @@ spec:
               data:
               - namespace: Loadbalancing
                 name: F5HTTPProfile
-                label: F5 HTTP Profile
+                label: F5 HTTP Profiles
                 kind: F5networksHTTPProfile
                 icon: material-symbols:lab-profile
 
               - namespace: Loadbalancing
                 name: F5TCPProfile
-                label: F5 TCP Profile
+                label: F5 TCP Profiles
                 kind: F5networksTCPProfile
                 icon: material-symbols:lab-profile
 
               - namespace: Loadbalancing
                 name: F5ClientSSLProfile
-                label: F5 ClientSSL Profile
+                label: F5 ClientSSL Profiles
                 kind: F5networksClientSSLProfile
                 icon: material-symbols:lab-profile
 
               - namespace: Loadbalancing
                 name: F5ServerSSLProfile
-                label: F5 ServerSSL Profile
+                label: F5 ServerSSL Profiles
                 kind: F5networksServerSSLProfile
                 icon: material-symbols:lab-profile
 
               - namespace: Loadbalancing
                 name: F5OneConnectProfile
-                label: F5 OneConnect Profile
+                label: F5 OneConnect Profiles
                 kind: F5networksOneConnectProfile
                 icon: material-symbols:lab-profile
 
@@ -91,36 +97,36 @@ spec:
               data:
               - namespace: Loadbalancing
                 name: F5LDAPMonitor
-                label: F5 LDAP Monitor
+                label: F5 LDAP Monitors
                 kind: F5networksLDAPMonitor
                 icon: mdi:heart-pulse
 
               - namespace: Loadbalancing
                 name: F5HTTPMonitor
-                label: F5 HTTP Monitor
+                label: F5 HTTP Monitors
                 kind: F5networksHTTPMonitor
                 icon: mdi:heart-pulse
 
               - namespace: Loadbalancing
                 name: F5HTTPSMonitor
-                label: F5 HTTPS Monitor
+                label: F5 HTTPS Monitors
                 kind: F5networksHTTPSMonitor
                 icon: mdi:heart-pulse
 
               - namespace: Loadbalancing
                 name: F5TCPMonitor
-                label: F5 TCP Monitor
+                label: F5 TCP Monitors
                 kind: F5networksTCPMonitor
                 icon: mdi:heart-pulse
 
               - namespace: Loadbalancing
                 name: F5ICMPMonitor
-                label: F5 ICMP Monitor
+                label: F5 ICMP Monitors
                 kind: F5networksICMPMonitor
                 icon: mdi:heart-pulse
 
               - namespace: Loadbalancing
                 name: F5ExternalMonitor
-                label: F5 External Monitor
+                label: F5 External Monitors
                 kind: F5networksExternalMonitor
                 icon: mdi:heart-pulse
